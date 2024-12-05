@@ -1,0 +1,12 @@
+--- sendmail-8.18.1/devtools/README	2024-01-31 08:38:32.000000000 +0200
++++ sendmail-8.18.1/devtools/README.new	2024-12-04 10:50:05.768578644 +0200
+@@ -89,6 +89,9 @@
+ 					shared object libraries.
+ confCCLINK	    confCC		Linker to use (for executables).
+ confCOPY	    cp			A program that copies files.
++confCUSTOM_MILTER_SOVER	[undefined]	If you want to define a custom SO-library
++					version number. Should only consist of
++					numbers and dots (e.g. "4", or "2.0.1"). 
+ confMKDIR	    [empty]		A program that creates directories
+ 					(mkdir) and takes the -p parameter
+ 					to create also intermediate directories
