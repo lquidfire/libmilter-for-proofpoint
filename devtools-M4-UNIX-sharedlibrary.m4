@@ -15,23 +15,33 @@ divert(-1)
 divert(0)dnl
 include(confBUILDTOOLSDIR`/M4/'bldM4_TYPE_DIR`/links.m4')dnl
 bldLIST_PUSH_ITEM(`bldC_PRODUCTS', bldCURRENT_PRODUCT)dnl
-bldPUSH_TARGET(bldCURRENT_PRODUCT.so.confMILTER_SOVER)dnl
+bldPUSH_TARGET(bldCURRENT_PRODUCT)dnl
 bldPUSH_INSTALL_TARGET(`install-'bldCURRENT_PRODUCT)dnl
 bldPUSH_CLEAN_TARGET(bldCURRENT_PRODUCT`-clean')dnl
 
 include(confBUILDTOOLSDIR`/M4/'bldM4_TYPE_DIR`/defines.m4')
+
+dnl for testing
+
+
 divert(bldTARGETS_SECTION)
-bldCURRENT_PRODUCT.so.confMILTER_SOVER: ${BEFORE} ${bldCURRENT_PRODUCT`OBJS'}
-	${CC} ${CFLAGS} ${confCCOPTS} ${confLDOPTS} ${LDOPTS_SO} \
-	-o bldCURRENT_PRODUCT.so.confMILTER_SOVER \
-	`-Wl,'confSONAME`,'bldCURRENT_PRODUCT`.so.'confSOMAJ ${bldCURRENT_PRODUCT`OBJS'}
+ifdef(`conf_libmilter_SOMAJOR', `define(`conf_libmilter_SOVERSION', conf_libmilter_SOMAJOR)')dnl
+ifdef(`conf_libmilter_SOMINOR', `define(`conf_libmilter_SOVERSION', conf_libmilter_SOMAJOR.conf_libmilter_SOMINOR)')dnl
+ifdef(`conf_libmilter_SOPATCH', `define(`conf_libmilter_SOVERSION', conf_libmilter_SOMAJOR.conf_libmilter_SOMINOR.conf_libmilter_SOPATCH)')dnl
+
+ifdef(`conf_libmilter_SOMINOR', `define(`conf_libmilter_SONAME', `.conf_libmilter_SOMAJOR')', `define(conf_libmilter_SONAME, `')')dnl
+
+bldCURRENT_PRODUCT: ${BEFORE} ${bldCURRENT_PRODUCT`OBJS'}
+	${CC} -shared -pthread ${CFLAGS} ${confCCOPTS} -fPIC ${confLDOPTS} ${LDOPTS_SO} -o bldCURRENT_PRODUCT.so.conf_libmilter_SOVERSION -Wl,-soname,bldCURRENT_PRODUCT.so.conf_libmilter_SOMAJOR ${bldCURRENT_PRODUCT`OBJS'}
+	${LN} ${LNOPTS} bldCURRENT_PRODUCT.so.conf_libmilter_SOVERSION bldCURRENT_PRODUCT.so${conf_libmilter_SONAME}
+	${LN} ${LNOPTS} bldCURRENT_PRODUCT.so.conf_libmilter_SOMAJOR bldCURRENT_PRODUCT.so
 ifdef(`bldLINK_SOURCES', `bldMAKE_SOURCE_LINKS(bldLINK_SOURCES)')
 
-install-`'bldCURRENT_PRODUCT: bldCURRENT_PRODUCT.so.confMILTER_SOVER
+install-`'bldCURRENT_PRODUCT: bldCURRENT_PRODUCT
 ifdef(`bldINSTALLABLE', `	ifdef(`confMKDIR', `if [ ! -d ${DESTDIR}${bldINSTALL_DIR`'LIBDIR} ]; then confMKDIR -p ${DESTDIR}${bldINSTALL_DIR`'LIBDIR}; else :; fi ')
-	${LN} ${LNOPTS} bldCURRENT_PRODUCT.so.confMILTER_SOVER ${DESTDIR}${LIBDIR}/bldCURRENT_PRODUCT.so.confSOMAJ
-	${LN} ${LNOPTS} bldCURRENT_PRODUCT.so.confSOMAJ ${DESTDIR}${LIBDIR}/bldCURRENT_PRODUCT.so
-	${INSTALL} -c -o ${LIBOWN} -g ${LIBGRP} -m ${LIBMODE} bldCURRENT_PRODUCT.so.confMILTER_SOVER ${DESTDIR}${LIBDIR}')
+	${INSTALL} -c -o ${LIBOWN} -g ${LIBGRP} -m ${LIBMODE} bldCURRENT_PRODUCT.so.conf_libmilter_SOVERSION ${DESTDIR}${LIBDIR}
+	${LN} ${LNOPTS} bldCURRENT_PRODUCT.so.conf_libmilter_SOVERSION ${DESTDIR}${LIBDIR}/bldCURRENT_PRODUCT.so`'conf_libmilter_SONAME
+	${LN} ${LNOPTS} bldCURRENT_PRODUCT.so.conf_libmilter_SOMAJOR ${DESTDIR}${LIBDIR}/bldCURRENT_PRODUCT.so')
 
 bldCURRENT_PRODUCT-clean:
 	rm -f ${OBJS} bldCURRENT_PRODUCT.so* ${MANPAGES}

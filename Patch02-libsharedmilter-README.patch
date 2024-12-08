@@ -1,5 +1,5 @@
---- sendmail-8.18.1/libsharedmilter/README	2024-12-04 10:03:13.495177920 +0200
-+++ sendmail-8.18.1/libsharedmilter/README.new	2024-12-04 10:58:33.246231210 +0200
+--- libsharedmilter/README	2024-12-08 14:39:21.524135554 +0200
++++ libsharedmilter/README.new	2024-12-08 14:51:05.720015470 +0200
 @@ -12,6 +12,9 @@
  Starting with 8.13 sendmail is compiled by default with support for
  the milter API.
@@ -10,23 +10,28 @@
  Note: if you want to write a milter in Java, then see
  http://sendmail-jilter.sourceforge.net/
  
-@@ -38,7 +41,6 @@
- SM_CONF_POLL
- 	Set to 1 if poll(2) should be used instead of select(2).
- 
--
- +-------------------+
- | BUILDING A FILTER |
- +-------------------+
-@@ -67,6 +69,11 @@
+@@ -67,6 +70,24 @@
  setrlimit() to increase the number of open file descriptors if your filter
  is going to be busy.
  
-+A custom version number 'n' can be defined for `libmilter.so.n'. It should
-+consist of only numbers and dots (e.g. "4", or "2.0.1").
+++----------------------------------------+
++| DEFINING A CUSTOM SHARED OBJECT NUMBER |
+++----------------------------------------+
 +
-+To use a custom SO version number, define `confCUSTOM_MILTER_SOVER'
-+in `site.config.m4'.
++The shared object's version number is extracted from `mfapi.h'.
++
++Alternatively, a custom version number can be defined for `libmilter.so'.
++The custom number can consist of oen, two, or three numbers
++(libmilter.so.1.2.3).
++
++To use a custom SO version number, add the following, according to your
++needs, to your `site.config.m4':
++
++  define(`conf_libmilter_CUSTOM_SOMAJOR', `3')dnl
++  define(`conf_libmilter_CUSTOM_SOMINOR', `1')dnl
++  define(`conf_libmilter_CUSTOM_SOPATCH', `5')dnl
++
++This will result in `libmilter.so.3.1.5' to be built.
  
  +----------------------------------------+
  | SPECIFYING FILTERS IN SENDMAIL CONFIGS |

@@ -14,24 +14,31 @@ bldPRODUCT_START(`sharedlibrary', `libmilter')
 
 dnl Extract shared object version number from `mfapi.h' file
 define(`runCtest', `esyscmd(`echo -e "#include <stdio.h>\n#include \"../include/libmilter/mfapi.h\"\nint main(){'$1`;return 0;}" | cc -x c -I../include -o ctest - && ./ctest && rm -f ctest')')dnl
-define(`confSOMAJ', runCtest(`printf(\"%d\", SM_LM_VRS_MAJOR(SMFI_VERSION))'))dnl
-define(`confSOMIN', runCtest(`printf(\"%d\", SM_LM_VRS_MINOR(SMFI_VERSION))'))dnl
-define(`confSOPLVL', runCtest(`printf(\"%d\", SM_LM_VRS_PLVL(SMFI_VERSION))'))dnl
+define(`conf_libmilter_SOMAJOR', runCtest(`printf(\"%d\", SM_LM_VRS_MAJOR(SMFI_VERSION))'))dnl
+define(`conf_libmilter_SOMINOR', runCtest(`printf(\"%d\", SM_LM_VRS_MINOR(SMFI_VERSION))'))dnl
+define(`conf_libmilter_SOPATCH', runCtest(`printf(\"%d\", SM_LM_VRS_PLVL(SMFI_VERSION))'))dnl
 
 ifelse(bldOS, `Linux',
 dnl Linux so-version is Major.Minor.Patchlevel
 `
-	define(`confMILTER_SOVER', `confSOMAJ.confSOMIN.confSOPLVL')
+	define(`conf_libmilter_SOVERSION', `conf_libmilter_SOMAJOR.conf_libmilter_SOMINOR.conf_libmilter_SOPATCH')
 ',
 dnl If not Linux, only use Major
 `
-	define(`confMILTER_SOVER', `confSOMAJ')
+	define(`conf_libmilter_SOVERSION', `conf_libmilter_SOMAJOR')
 ')
 
-dnl define(`confCUSTOM_MILTER_SOVER', `222222222222')
+ifdef(`conf_libmilter_CUSTOM_SOMAJOR', `undefine(`conf_libmilter_SOMAJOR', `conf_libmilter_SOMINOR', `conf_libmilter_SOPATCH')')dnl
+ifdef(`conf_libmilter_CUSTOM_SOMAJOR', `define(`conf_libmilter_SOMAJOR', conf_libmilter_CUSTOM_SOMAJOR)')dnl
+ifdef(`conf_libmilter_CUSTOM_SOMINOR', `define(`conf_libmilter_SOMINOR', conf_libmilter_CUSTOM_SOMINOR)')dnl
+ifdef(`conf_libmilter_CUSTOM_SOPATCH', `define(`conf_libmilter_SOPATCH', conf_libmilter_CUSTOM_SOPATCH)')dnl
 
-ifdef(`confCUSTOM_MILTER_SOVER', `define(`confCUSTOM_MILTER_SOVER_DOT', `confCUSTOM_MILTER_SOVER.')')
-ifdef(`confCUSTOM_MILTER_SOVER', `define(`confSOMAJ', `substr(confCUSTOM_MILTER_SOVER_DOT, 0, index(confCUSTOM_MILTER_SOVER_DOT, `.'))')')
+divert(bldTARGETS_SECTION)
+ifdef(`conf_libmilter_SOMAJOR', `define(`conf_libmilter_SOVERSION', conf_libmilter_SOMAJOR)')dnl
+ifdef(`conf_libmilter_SOMINOR', `define(`conf_libmilter_SOVERSION', conf_libmilter_SOMAJOR.conf_libmilter_SOMINOR)')dnl
+ifdef(`conf_libmilter_SOPATCH', `define(`conf_libmilter_SOVERSION', conf_libmilter_SOMAJOR.conf_libmilter_SOMINOR.conf_libmilter_SOPATCH)')dnl
+
+ifdef(`conf_libmilter_SOMINOR', `define(`conf_libmilter_SONAME', `.conf_libmilter_SOMAJOR')', `define(conf_libmilter_SONAME, `')')dnl
 
 define(`bldINSTALLABLE', `true')
 define(`LIBMILTER_EXTRAS', `errstring.c strl.c')
